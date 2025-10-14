@@ -1,0 +1,3 @@
+ipython==8.27.0
+# bcrypt is optional for this exercise but commonly used later
+bcrypt==4.0.1
