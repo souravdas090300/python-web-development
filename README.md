@@ -21,30 +21,48 @@ This exercise demonstrates proper Python environment setup using modern tools (`
 - **Version:** Python 3.14.0 (newer than required 3.8.7, taking advantage of latest features)
 - **Verification:** `python --version`
 
-### 2. Virtual Environments with `uv`
-Created two isolated virtual environments using `uv` (10x faster than traditional pip):
+### 2. Virtual Environments with Pure `uv` Workflow
+Created two isolated virtual environments using **pure `uv`** (10x faster than traditional pip):
 
 - **cf-python-base** — Primary development environment
-- **cf-python-copy** — Duplicate environment created from requirements.txt
+- **cf-python-copy** — Duplicate environment created from pyproject.toml
+- **.venv** — Default uv environment (auto-created by `uv add`)
 
-**Why `uv`?**
+**Why Pure `uv`?**
 - 10-100x faster package installation
 - Better dependency resolution
+- **No need to activate environments** - uv auto-detects
 - Modern Python tooling recommended by mentor
+- Uses `pyproject.toml` instead of `requirements.txt`
 
-### 3. Package Installation
-All packages installed within activated virtual environments:
+### 3. Package Installation with `uv add`
+All packages installed using **`uv add`** (not `uv pip install`):
 - **ipython** 9.6.0 — Enhanced interactive Python shell
 - **bcrypt** 5.0.0 — Password hashing library
-- Plus 14 dependencies (see requirements.txt)
+- Plus 14 dependencies (auto-resolved)
 
-### 4. Requirements File
-**Generated (NOT hardcoded)** using:
-```powershell
-uv pip freeze > requirements.txt
+**Key Difference:**
+- ❌ Old way: `uv pip install ipython` (hybrid approach)
+- ✅ New way: `uv add ipython` (pure uv workflow)
+
+### 4. Dependency Management with `pyproject.toml`
+**Modern dependency tracking** using `pyproject.toml`:
+```toml
+[project]
+name = "exercise-1-1"
+version = "0.1.0"
+requires-python = ">=3.14"
+dependencies = [
+    "bcrypt>=5.0.0",
+    "ipython>=9.6.0",
+]
 ```
 
-This ensures exact package versions are captured from the actual environment.
+**Benefits over `requirements.txt`:**
+- More informative (project metadata included)
+- Industry standard for Python projects
+- Auto-updated by `uv add` commands
+- No need to manually `pip freeze`
 
 ### 5. add.py Script
 Clean, readable script that:
@@ -65,18 +83,22 @@ Simplified test file (as per mentor recommendation):
 
 ```
 Exercise 1.1/
-├── screenshots/              # Organized screenshots folder
+├── .venv/                   # Default uv virtual environment
+├── cf-python-base/          # Named virtual environment
+├── cf-python-copy/          # Copy environment
+├── screenshots/             # Organized screenshots folder
 │   ├── step1_python_version.png
-│   ├── step2_create_env.png
-│   ├── step3_install_ipython.png
+│   ├── step2_uv_init.png
+│   ├── step3_uv_add_ipython.png
 │   ├── step4_ipython_shell.png
-│   ├── step5_export_requirements.png
+│   ├── step5_pyproject_toml.png
 │   └── step6_copy_env.png
 ├── add.py                   # Main script
-├── test_run.py             # Simplified tests
-├── requirements.txt        # Generated package list
-├── learning_journal.md     # Learning documentation
-└── README.md              # This file
+├── test_run.py              # Simplified tests
+├── pyproject.toml           # Modern dependency file (replaces requirements.txt)
+├── uv.lock                  # Lock file for reproducible builds
+├── learning_journal.md      # Learning documentation
+└── requirements.txt         # Legacy file (kept for reference)
 ```
 
 ## 🚀 How to Use
@@ -87,7 +109,32 @@ Exercise 1.1/
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
-### Create Virtual Environment
+### Pure `uv` Workflow (Recommended)
+
+```powershell
+# Step 1: Initialize project
+uv init --bare
+
+# Step 2: Create first virtual environment
+uv venv cf-python-base
+
+# Step 3: Activate and add packages
+.\cf-python-base\Scripts\Activate.ps1
+uv add ipython
+uv add bcrypt
+
+# Step 4: Create second environment
+deactivate
+uv venv cf-python-copy
+
+# Step 5: Activate and install from pyproject.toml
+.\cf-python-copy\Scripts\Activate.ps1
+uv pip install -r pyproject.toml
+
+# No need to pip freeze - pyproject.toml auto-updates!
+```
+
+### Legacy Approach (Old Way with uv pip)
 
 ```powershell
 # Create environment
@@ -95,16 +142,12 @@ uv venv cf-python-base
 
 # Activate it
 .\cf-python-base\Scripts\Activate.ps1
-```
 
-### Install Packages
-
-```powershell
-# Install from requirements.txt
-uv pip install -r requirements.txt
-
-# Or install individually
+# Install packages (old way)
 uv pip install ipython bcrypt
+
+# Generate requirements.txt
+uv pip freeze > requirements.txt
 ```
 
 ### Run add.py
@@ -133,7 +176,17 @@ Interactive Python shell with syntax highlighting and auto-completion.
 
 ## 📦 Installed Packages
 
-From `requirements.txt` (generated with `uv pip freeze`):
+From `pyproject.toml` (auto-updated with `uv add`):
+
+**Direct Dependencies:**
+```toml
+dependencies = [
+    "bcrypt>=5.0.0",
+    "ipython>=9.6.0",
+]
+```
+
+**All Packages (including transitive dependencies):**
 
 ```
 asttokens==3.0.0
@@ -171,12 +224,22 @@ uv venv cf-python-base
 ```
 **Screenshot:** `screenshots/step2_create_env.png`
 
-### Step 3: Install IPython
-Installed ipython within activated environment:
+### Step 2: Initialize Project with uv
+Created pyproject.toml using pure uv:
 ```powershell
-uv pip install ipython
+uv init --bare
 ```
-**Screenshot:** `screenshots/step3_install_ipython.png`
+**Screenshot:** `screenshots/step2_uv_init.png`
+
+### Step 3: Create Environment and Add Packages
+Created `cf-python-base` and installed ipython with `uv add`:
+```powershell
+uv venv cf-python-base
+.\cf-python-base\Scripts\Activate.ps1
+uv add ipython
+uv add bcrypt
+```
+**Screenshot:** `screenshots/step3_uv_add_ipython.png`
 
 ### Step 4: Test IPython Shell
 Launched and tested IPython:
@@ -185,20 +248,20 @@ ipython
 ```
 **Screenshot:** `screenshots/step4_ipython_shell.png`
 
-### Step 5: Export Requirements
-Generated requirements.txt from activated environment:
+### Step 5: View pyproject.toml
+Verified dependency tracking in pyproject.toml:
 ```powershell
-uv pip freeze > requirements.txt
+cat pyproject.toml
 ```
-**Screenshot:** `screenshots/step5_export_requirements.png`
+**Screenshot:** `screenshots/step5_pyproject_toml.png`
 
 ### Step 6: Create Copy Environment
-Created second environment from requirements:
+Created second environment and installed from pyproject.toml:
 ```powershell
 deactivate
 uv venv cf-python-copy
 .\cf-python-copy\Scripts\Activate.ps1
-uv pip install -r requirements.txt
+uv pip install -r pyproject.toml
 ```
 **Screenshot:** `screenshots/step6_copy_env.png`
 
@@ -206,27 +269,55 @@ uv pip install -r requirements.txt
 
 ### Required (All Completed)
 
-- ✅ **Virtual environment set up correctly** using `uv` (10x faster than pip)
-- ✅ **ipython installed within virtual environment** (cf-python-base was activated)
-- ✅ **Requirements.txt generated, not hardcoded** (used `uv pip freeze`)
+- ✅ **Virtual environment set up correctly** using pure `uv` workflow
+- ✅ **ipython installed using `uv add`** (modern approach, not `uv pip install`)
+- ✅ **Learning journal completed** with comprehensive reflections
+- ✅ **pyproject.toml created** (replaces requirements.txt)
 
 ### Recommendations (All Implemented)
 
+- ✅ **Pure `uv` workflow** — Using `uv init`, `uv add` instead of `uv pip`
+- ✅ **pyproject.toml for dependency management** — More informative than requirements.txt
+- ✅ **No manual pip freeze needed** — Dependencies auto-tracked
 - ✅ **Screenshots organized** in separate `screenshots/` folder with clear naming
 - ✅ **Test file simplified** — removed importlib, uses direct import
 - ✅ **Structured submission** — clear folder organization and documentation
 
 ## 🔧 Command Reference
 
+### Pure uv Commands (Recommended)
+
+**Initialize project:**
+```powershell
+uv init --bare
+```
+
+**Create virtual environment:**
+```powershell
+uv venv <env-name>
+```
+
+**Add package (auto-updates pyproject.toml):**
+```powershell
+uv add <package-name>
+```
+
+**Install from pyproject.toml:**
+```powershell
+uv pip install -r pyproject.toml
+```
+
 **Activate environment:**
 ```powershell
-.\cf-python-base\Scripts\Activate.ps1
+.\<env-name>\Scripts\Activate.ps1
 ```
 
 **Deactivate:**
 ```powershell
 deactivate
 ```
+
+### Legacy uv pip Commands (Old Way)
 
 **Install package:**
 ```powershell
@@ -251,19 +342,21 @@ uv pip install -r requirements.txt
 ## 📝 Key Learnings
 
 1. **Virtual environments isolate dependencies** — Each project can have different package versions
-2. **`uv` is significantly faster** — 10-100x speedup compared to traditional pip
-3. **Generated requirements.txt ensures reproducibility** — Exact same packages install on any machine
-4. **Always activate before installing** — Prevents polluting global Python installation
-5. **Modern Python development uses tools like uv** — Faster and more reliable than older tools
+2. **Pure `uv` workflow is superior to hybrid `uv pip`** — Why use pip commands if uv has better alternatives?
+3. **`pyproject.toml` is the modern standard** — More informative than requirements.txt
+4. **`uv add` auto-manages dependencies** — No manual pip freeze needed
+5. **`uv` is significantly faster** — 10-100x speedup compared to traditional pip
+6. **No activation needed with uv** — Commands run with `uv` auto-detect the environment
+7. **`uv.lock` ensures reproducibility** — Exact same packages install on any machine
 
 ## 🔍 Verification
 
-Both virtual environments have identical packages (proof that requirements.txt works correctly):
+Both virtual environments have identical packages (proof that pyproject.toml works correctly):
 
 ```powershell
 # In cf-python-base
 .\cf-python-base\Scripts\Activate.ps1
-uv pip list
+ipython --version
 
 # In cf-python-copy
 deactivate
