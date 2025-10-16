@@ -1,9 +1,15 @@
-# Exercise 1.1 — Python Environment Setup (Windows)
+# Python for Web Developers - Course Exercises
 
 **Student:** Sourav Das  
 **Course:** Python for Web Developers  
-**Date:** October 15, 2025  
-**Python Version:** 3.14.0
+**Python Version:** 3.14.0  
+**Last Updated:** October 16, 2025
+
+---
+
+# Exercise 1.1 — Python Environment Setup (Windows)
+
+**Date:** October 15, 2025
 
 ## 📋 Overview
 
@@ -276,7 +282,152 @@ Both show the same 16 packages with matching versions.
 
 ---
 
+---
+
+# Exercise 1.2 — Data Types and Data Structures in Python
+
+**Date:** October 15, 2025
+
+## 📋 Overview
+
+This exercise explores Python's core data structures (tuples, lists, dictionaries, strings) through hands-on practice tasks and a recipe management application.
+
+## ✅ Completed Requirements
+
+### Practice Tasks (5 Total)
+
+1. **Compound Interest Calculator** — File I/O, type conversion, mathematical operations
+2. **World Population Analysis** — Tuple operations, slicing, max() function
+3. **Ford Vehicle Management** — List manipulation, append(), sort()
+4. **String Slicing Practice** — Predictions and verification of slice operations
+5. **Month Dictionary** — Numeric keys mapping to month names
+
+### Main Task: Recipe Management
+
+Created 5 recipe dictionaries stored in a list structure:
+- Each recipe contains: name, cooking_time, ingredients (list)
+- Demonstrated nested data structures
+- Displayed all recipe details
+
+### Data Structure Justifications
+
+**Dictionary for Individual Recipes:**
+> "I chose a dictionary for individual recipes because it provides labeled access to recipe components (name, cooking_time, ingredients) through meaningful keys rather than positional indices. Dictionaries are mutable, allowing recipe modifications, and self-documenting through key names. This structure makes the code more readable and maintainable, as accessing `recipe['name']` is clearer than `recipe[0]`. The flexibility to add new recipe attributes later without breaking existing code makes dictionaries ideal for this use case."
+
+**List for All Recipes Collection:**
+> "I selected a list for the outer all_recipes structure because recipes have a natural sequential ordering and we need to iterate through all recipes systematically. Lists are mutable, allowing us to easily add, remove, or modify recipes in our collection. The indexing capability enables accessing specific recipes by position when needed, and lists efficiently handle variable numbers of recipes through append() operations."
+
+## 📁 Project Structure
+
+```
+Exercise 1.2/
+├── 1.2-Practice Task 1/
+│   └── codepractice1.txt
+├── 1.2-Practice Task 2/
+├── 1.2-Practice Task 3/
+├── 1.2-Practice Task 4/
+├── 1.2-Practice Task 5/
+├── README.md
+└── learning_journal.md
+```
+
+## 📝 Key Learnings
+
+- **Tuples:** Immutable sequences, ideal for fixed data
+- **Lists:** Mutable, ordered collections with append() and sort()
+- **Dictionaries:** Key-value pairs for structured, labeled data
+- **Strings:** Immutable character sequences with powerful slicing
+- **Nested Structures:** Lists containing dictionaries for complex data models
+
+---
+
+# Exercise 1.3 — Core Python Operations
+
+**Date:** October 16, 2025
+
+## 📋 Overview
+
+This exercise covers essential Python programming concepts: scripts vs interactive shell, conditionals (if-elif-else), loops (for/while), and functions with parameters and return values.
+
+## ✅ Completed Requirements
+
+### Practice Tasks (3 Total)
+
+1. **Calculator with Conditionals** — if-elif-else statements for arithmetic operations (+, -)
+2. **Top 3 Test Scores** — for loop with range() to find highest scores
+3. **Loop Comparison** — Rewriting prints using both while and for loops
+
+### Main Task: Recipe Management System
+
+**Features Implemented:**
+- User input collection for multiple recipes
+- `take_recipe()` function returning dictionary
+- Automatic difficulty calculation based on cooking time and ingredients
+- Four difficulty levels: Easy, Medium, Intermediate, Hard
+- Unique ingredient collection across all recipes
+- Alphabetically sorted ingredient display
+
+**Difficulty Logic:**
+- **Easy:** < 10 min cooking + < 4 ingredients
+- **Medium:** < 10 min cooking + ≥ 4 ingredients
+- **Intermediate:** ≥ 10 min cooking + < 4 ingredients
+- **Hard:** ≥ 10 min cooking + ≥ 4 ingredients
+
+## 📁 Project Structure
+
+```
+Exercise 1.3/
+├── 1.3-Practice Task 1/
+│   └── code practice1_calculator.py
+├── 1.3-Practice Task 2/
+├── 1.3-Practice Task 3/
+├── screenshots/
+├── Exercise_1.3.py
+└── learning_journal.md
+```
+
+## 🚀 How to Run
+
+```powershell
+cd "Exercise 1.3"
+python Exercise_1.3.py
+```
+
+**Example Usage:**
+```
+How many recipes would you like to enter? 2
+
+RECIPE 1
+Enter the recipe name: Tea
+Enter the cooking time (in minutes): 5
+How many ingredients does this recipe have? 3
+  Enter ingredient 1: Tea Leaves
+  Enter ingredient 2: Water
+  Enter ingredient 3: Sugar
+
+RECIPE 2
+Enter the recipe name: Coffee
+Enter the cooking time (in minutes): 7
+How many ingredients does this recipe have? 4
+  Enter ingredient 1: Coffee Powder
+  Enter ingredient 2: Water
+  Enter ingredient 3: Milk
+  Enter ingredient 4: Sugar
+
+[Displays all recipes with difficulty levels and sorted ingredients]
+```
+
+## 📝 Key Learnings
+
+- **Scripts vs Shell:** Scripts (.py files) allow reusable, shareable code vs one-time interactive commands
+- **Conditionals:** Multi-condition logic with if-elif-else chains
+- **For Loops:** Iterator-based loops with range() for counting
+- **While Loops:** Condition-based loops requiring manual iteration management
+- **Functions:** Reusable code blocks with parameters and return values
+- **Nested Loops:** Inner loops for detailed processing within outer iteration
+
+---
+
 **Repository:** [python-web-development](https://github.com/souravdas090300/python-web-development)  
 **Author:** Sourav Das  
-**Exercise:** 1.1 - Python Environment Setup  
-**Submission Date:** October 15, 2025
+**Last Updated:** October 16, 2025
