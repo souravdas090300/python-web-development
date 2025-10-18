@@ -20,8 +20,8 @@ def take_recipe():
     ingredients = []
     n_ingredients = int(input("How many ingredients does this recipe have? "))
     
-    for i in range(n_ingredients):
-        ingredient = input(f"  Enter ingredient {i+1}: ")
+    for i in range(1, n_ingredients + 1):
+        ingredient = input(f"  Enter ingredient {i}: ")
         ingredients.append(ingredient)
     
     # Create and return recipe dictionary
@@ -91,11 +91,11 @@ print("\n" + "=" * 60)
 print("ALL INGREDIENTS (Alphabetical Order)")
 print("=" * 60)
 
-# Sort ingredients alphabetically
-ingredients_list.sort()
+# Create sorted copy to preserve original ingredients_list
+sorted_ingredients_list = sorted(ingredients_list)
 
 print()
-for ingredient in ingredients_list:
+for ingredient in sorted_ingredients_list:
     print(f"- {ingredient}")
 
 print("\n" + "=" * 60)
