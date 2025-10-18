@@ -3,7 +3,7 @@
 **Date:** October 16, 2025  
 **Student:** Sourav Das  
 **Exercise:** 1.3 - Operators and Functions in Python (Scripts, Conditionals, Loops, Functions)  
-**Updated:** October 16, 2025 - Implemented mentor recommendations
+**Updated:** October 18, 2025 - Added short-circuit evaluation understanding (Mentor feedback)
 
 ---
 
@@ -620,10 +620,82 @@ else:
 - `==` equal to
 - `!=` not equal to
 
-**Boolean Operators:**
+**Boolean Operators (Logical Operators):**
 - `and` - both conditions must be True
 - `or` - at least one condition must be True
 - `not` - inverts the boolean value
+
+**⚡ Short-Circuit Evaluation (Mentor Recommendation):**
+
+Both `and` and `or` operators use **short-circuit evaluation** - a powerful optimization where Python stops evaluating as soon as the result is determined. This is crucial for performance and preventing errors.
+
+**How `and` Short-Circuits:**
+```python
+# If the first condition is False, Python doesn't check the second
+False and True  # Stops at False, doesn't evaluate True
+False and expensive_function()  # expensive_function() never runs!
+
+# Example from real code:
+if recipe and recipe['cooking_time'] < 10:
+    # If recipe is None/empty, the second check never happens
+    # This prevents errors from accessing None['cooking_time']
+```
+
+**How `or` Short-Circuits:**
+```python
+# If the first condition is True, Python doesn't check the second
+True or False  # Stops at True, doesn't evaluate False
+True or expensive_function()  # expensive_function() never runs!
+
+# Example from real code:
+if user_input or default_value:
+    # If user_input exists, default_value is never checked
+```
+
+**Why Short-Circuit Evaluation Matters:**
+
+1. **Performance Improvement:**
+   ```python
+   # Expensive check only happens if needed
+   if quick_check() and expensive_database_query():
+       process_data()
+   ```
+
+2. **Prevents Errors:**
+   ```python
+   # Avoids division by zero
+   if denominator != 0 and numerator / denominator > 5:
+       print("Result is greater than 5")
+   ```
+
+3. **Safe Data Access:**
+   ```python
+   # Prevents accessing properties of None
+   if recipe and len(recipe['ingredients']) > 3:
+       print("Complex recipe")
+   ```
+
+**Practical Example from Exercise 1.3:**
+```python
+# This uses short-circuit evaluation
+if cooking_time < 10 and num_ingredients < 4:
+    difficulty = "Easy"
+
+# How it works:
+# 1. If cooking_time >= 10, Python stops (False AND anything = False)
+# 2. Only checks num_ingredients if cooking_time < 10
+# 3. More efficient than always checking both conditions
+```
+
+**Truth Table with Short-Circuit:**
+| Expression | First Operand | Short-Circuit? | Result |
+|------------|---------------|----------------|---------|
+| False AND x | False | ✅ Yes (stops here) | False |
+| True AND x | True | ❌ No (must check x) | Depends on x |
+| True OR x | True | ✅ Yes (stops here) | True |
+| False OR x | False | ❌ No (must check x) | Depends on x |
+
+**Key Takeaway:** Both `and` and `or` optimize evaluation by stopping as soon as the result is known. This makes code faster and safer!
 
 **Exercise 1.3 Application - Difficulty Calculation:**
 ```python
@@ -966,7 +1038,119 @@ sorted_numbers = sorted(numbers)  # Keep both versions
 
 ---
 
-### Challenge 3: Designing the Recipe Dictionary Structure
+### Challenge 3: Understanding Short-Circuit Evaluation in Logical Operators
+
+**Mentor Feedback (October 18, 2025):**
+> "Regarding the logical operators, it's important to understand that both `or` and `and` can use short circuit evaluations. This is a behavior of logical operators in many programming languages where the second operand is only evaluated if its evaluation is necessary to determine the overall result of the expression. This optimization can lead to performance improvements and prevent errors. For example, with the expression `False AND True`, the second operand is not necessary because the first operand has already determined the outcome."
+
+**Initial Understanding:**
+I knew that `and` and `or` operators combined conditions, but I didn't realize they used short-circuit evaluation for optimization and error prevention.
+
+**Deep Dive - What I Learned:**
+
+**1. How Short-Circuit Evaluation Works:**
+
+**For `and` operator:**
+- If first condition is `False`, result is always `False`
+- Python stops immediately, doesn't evaluate second condition
+- Example: `False and anything` → `False` (second part never runs)
+
+**For `or` operator:**
+- If first condition is `True`, result is always `True`
+- Python stops immediately, doesn't evaluate second condition
+- Example: `True or anything` → `True` (second part never runs)
+
+**2. Practical Examples:**
+
+**Performance Optimization:**
+```python
+# Expensive operations only run when necessary
+def is_prime(n):
+    # Expensive calculation
+    return all(n % i != 0 for i in range(2, int(n**0.5) + 1))
+
+# Short-circuit saves computation
+if n < 2 or not is_prime(n):
+    print("Not prime")
+# If n < 2 is True, is_prime() never runs!
+```
+
+**Error Prevention:**
+```python
+# Prevents division by zero
+if denominator != 0 and numerator / denominator > 5:
+    print("Result is greater than 5")
+# If denominator is 0, division never happens!
+
+# Prevents accessing None
+if recipe and recipe['cooking_time'] < 10:
+    print("Quick recipe")
+# If recipe is None, accessing recipe['cooking_time'] never happens!
+```
+
+**In Our Difficulty Calculation:**
+```python
+if cooking_time < 10 and num_ingredients < 4:
+    difficulty = "Easy"
+# If cooking_time >= 10:
+#   - Result is already False
+#   - num_ingredients < 4 is never evaluated
+#   - Saves one comparison operation
+```
+
+**3. Real-World Impact:**
+
+**Before Understanding Short-Circuit:**
+```python
+# Might cause errors
+if recipe['ingredients'] and len(recipe['ingredients']) > 3:
+    # What if recipe['ingredients'] is None?
+```
+
+**After Understanding Short-Circuit:**
+```python
+# Safe because of short-circuit
+if recipe.get('ingredients') and len(recipe['ingredients']) > 3:
+    # If get() returns None, len() never runs!
+```
+
+**4. Truth Table with Short-Circuit Behavior:**
+
+| Expression | First Value | Evaluates Second? | Final Result |
+|------------|-------------|-------------------|--------------|
+| `False and x` | False | ❌ No (stops) | False |
+| `True and x` | True | ✅ Yes (must check) | Depends on x |
+| `True or x` | True | ❌ No (stops) | True |
+| `False or x` | False | ✅ Yes (must check) | Depends on x |
+
+**5. Why This Matters:**
+
+✅ **Performance:** Avoids unnecessary computations  
+✅ **Safety:** Prevents errors from evaluating invalid operations  
+✅ **Efficiency:** Common in professional code for optimization  
+✅ **Understanding:** Helps write more robust conditional logic
+
+**Updated Knowledge:**
+Now I understand that `and` and `or` aren't just about combining conditions—they're smart operators that optimize by stopping as soon as the result is determined. This makes code both faster and safer!
+
+**Application in Future Code:**
+```python
+# Always put "cheap" checks first
+if quick_validation() and expensive_database_call():
+    process_data()
+
+# Put "likely to be true" conditions first with or
+if cached_result or expensive_computation():
+    use_result()
+
+# Safety checks first
+if list_exists and len(my_list) > 0 and my_list[0] == target:
+    process_first_item()
+```
+
+---
+
+### Challenge 4: Designing the Recipe Dictionary Structure
 
 **Problem:** Deciding how to structure recipe data.
 
@@ -1582,7 +1766,29 @@ else:
 
 **Hours Spent:** ~3-4 hours  
 **Completion Date:** October 16, 2025  
-**Status:** ✅ Complete - All practice tasks and main task finished
+**Status:** ✅ Complete - All practice tasks and main task finished  
+**Updated:** October 18, 2025 - Incorporated mentor feedback on short-circuit evaluation
+
+---
+
+## 📬 Latest Mentor Feedback (October 18, 2025)
+
+**Mentor Comments:**
+> "Congratulations!!! Your hard work and perseverance have truly paid off. You did well explaining your answers with code examples. Good job."
+
+**Recommendation Received:**
+> "Regarding the logical operators, it's important to understand that both `or` and `and` can use short circuit evaluations. This is a behavior of logical operators in many programming languages where the second operand is only evaluated if its evaluation is necessary to determine the overall result of the expression. This optimization can lead to performance improvements and prevent errors. For example, with the expression `False AND True`, the second operand is not necessary because the first operand has already determined the outcome."
+
+**Actions Taken:**
+- ✅ Added comprehensive section on short-circuit evaluation in Boolean Operators section
+- ✅ Created detailed Challenge 3 explaining short-circuit behavior
+- ✅ Included practical examples showing performance benefits
+- ✅ Added safety examples preventing errors
+- ✅ Created truth table with short-circuit behavior
+- ✅ Documented real-world applications
+
+**Key Learning:**
+Understanding that `and` and `or` operators don't just combine conditions—they intelligently optimize by stopping evaluation as soon as the result is determined. This makes code both faster (performance) and safer (error prevention).
 
 ---
 
