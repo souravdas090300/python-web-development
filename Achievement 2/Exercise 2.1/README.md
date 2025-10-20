@@ -30,21 +30,25 @@ By completing this exercise, I have:
 
 ```
 Exercise 2.1/
-├── bin/                          # Virtual environment executables
-│   ├── Activate.ps1              # PowerShell activation script
-│   ├── activate                  # Unix activation script
-│   ├── python.exe                # Python interpreter
-│   ├── pip.exe                   # Package installer
-│   └── django-admin.exe          # Django admin command
-├── include/                      # Virtual environment headers
-├── lib/                          # Virtual environment packages
-│   └── python3.12/
-│       └── site-packages/
-│           ├── django/           # Django framework
-│           ├── asgiref/          # ASGI implementation
-│           ├── sqlparse/         # SQL parsing library
-│           └── tzdata/           # Timezone data
-├── pyvenv.cfg                    # Virtual environment configuration
+├── achievement2-practice/        # Virtual environment (not pushed to GitHub)
+│   ├── bin/                      # Virtual environment executables
+│   │   ├── Activate.ps1          # PowerShell activation script
+│   │   ├── activate              # Unix activation script
+│   │   ├── python.exe            # Python interpreter
+│   │   ├── pip.exe               # Package installer
+│   │   └── django-admin.exe      # Django admin command
+│   ├── include/                  # Virtual environment headers
+│   ├── lib/                      # Virtual environment packages
+│   │   └── python3.12/
+│   │       └── site-packages/
+│   │           ├── django/       # Django framework
+│   │           ├── asgiref/      # ASGI implementation
+│   │           ├── sqlparse/     # SQL parsing library
+│   │           └── tzdata/       # Timezone data
+│   └── pyvenv.cfg                # Virtual environment configuration
+├── src/                          # Django project source code
+├── .gitignore                    # Exclude venv and cache from git
+├── requirements.txt              # Python dependencies
 ├── learning_journal.md           # Detailed learning reflections
 ├── learning_journey.md           # Narrative learning story
 ├── README.md                     # This file
@@ -76,15 +80,20 @@ python --version
 #### 2. Virtual Environment Creation
 ```powershell
 cd "C:\Users\dasau\python-web-development\Achievement 2\Exercise 2.1"
-python -m venv .
+python -m venv achievement2-practice --prompt "achievement2-practice"
 ```
 
-**Note:** Virtual environment was created directly in the Exercise 2.1 folder using `.` as the path, creating a self-contained development environment.
+**Note:** Virtual environment was created with a specific name (`achievement2-practice`) as per mentor requirements. This can be re-generated from `requirements.txt` using:
+```powershell
+python -m venv achievement2-practice --prompt "achievement2-practice"
+.\achievement2-practice\bin\Activate.ps1
+pip install -r requirements.txt
+```
 
 #### 3. Virtual Environment Activation
 ```powershell
-.\bin\Activate.ps1
-# Prompt changes to: (Exercise 2.1)
+.\achievement2-practice\bin\Activate.ps1
+# Prompt changes to: (achievement2-practice)
 ```
 
 #### 4. Django Installation
