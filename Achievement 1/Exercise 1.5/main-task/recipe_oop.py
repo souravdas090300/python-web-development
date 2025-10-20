@@ -17,28 +17,49 @@ class Recipe:
         Args:
             name (str): Name of the recipe
         """
-        self.name = name
-        self.ingredients = []
-        self.cooking_time = 0
-        self.difficulty = None
+        self._name = name
+        self._ingredients = []
+        self._cooking_time = 0
+        self._difficulty = None
     
-    # Getter and Setter for name
-    def get_name(self):
+    # Property for name (Pythonic way using @property decorator)
+    @property
+    def name(self):
         """Return the recipe name."""
-        return self.name
+        return self._name
     
-    def set_name(self, name):
+    @name.setter
+    def name(self, value):
         """Set the recipe name."""
-        self.name = name
+        self._name = value
     
-    # Getter and Setter for cooking_time
-    def get_cooking_time(self):
+    # Property for cooking_time (Pythonic way using @property decorator)
+    @property
+    def cooking_time(self):
         """Return the cooking time."""
-        return self.cooking_time
+        return self._cooking_time
     
-    def set_cooking_time(self, cooking_time):
+    @cooking_time.setter
+    def cooking_time(self, value):
         """Set the cooking time in minutes."""
-        self.cooking_time = cooking_time
+        self._cooking_time = value
+    
+    # Property for ingredients (read-only, use add_ingredients to modify)
+    @property
+    def ingredients(self):
+        """Return the list of ingredients."""
+        return self._ingredients
+    
+    # Property for difficulty (read-only, calculated automatically)
+    @property
+    def difficulty(self):
+        """
+        Return the difficulty level.
+        Calculates difficulty if not already calculated.
+        """
+        if self._difficulty is None:
+            self.calculate_difficulty()
+        return self._difficulty
     
     def add_ingredients(self, *ingredients):
         """
@@ -49,13 +70,9 @@ class Recipe:
             *ingredients: Variable number of ingredient names
         """
         for ingredient in ingredients:
-            self.ingredients.append(ingredient)
+            self._ingredients.append(ingredient)
         # Update the class variable with all ingredients
         self.update_all_ingredients()
-    
-    def get_ingredients(self):
-        """Return the list of ingredients."""
-        return self.ingredients
     
     def calculate_difficulty(self):
         """
@@ -67,25 +84,16 @@ class Recipe:
         - Intermediate: >= 10 min AND < 4 ingredients
         - Hard: >= 10 min AND >= 4 ingredients
         """
-        num_ingredients = len(self.ingredients)
+        num_ingredients = len(self._ingredients)
         
-        if self.cooking_time < 10 and num_ingredients < 4:
-            self.difficulty = "Easy"
-        elif self.cooking_time < 10 and num_ingredients >= 4:
-            self.difficulty = "Medium"
-        elif self.cooking_time >= 10 and num_ingredients < 4:
-            self.difficulty = "Intermediate"
-        elif self.cooking_time >= 10 and num_ingredients >= 4:
-            self.difficulty = "Hard"
-    
-    def get_difficulty(self):
-        """
-        Return the difficulty level.
-        Calculates difficulty if not already calculated.
-        """
-        if self.difficulty is None:
-            self.calculate_difficulty()
-        return self.difficulty
+        if self._cooking_time < 10 and num_ingredients < 4:
+            self._difficulty = "Easy"
+        elif self._cooking_time < 10 and num_ingredients >= 4:
+            self._difficulty = "Medium"
+        elif self._cooking_time >= 10 and num_ingredients < 4:
+            self._difficulty = "Intermediate"
+        elif self._cooking_time >= 10 and num_ingredients >= 4:
+            self._difficulty = "Hard"
     
     def search_ingredient(self, ingredient):
         """
@@ -97,14 +105,14 @@ class Recipe:
         Returns:
             bool: True if ingredient found, False otherwise
         """
-        return ingredient in self.ingredients
+        return ingredient in self._ingredients
     
     def update_all_ingredients(self):
         """
         Update the class variable all_ingredients with ingredients
         from this recipe that aren't already present.
         """
-        for ingredient in self.ingredients:
+        for ingredient in self._ingredients:
             if ingredient not in Recipe.all_ingredients:
                 Recipe.all_ingredients.append(ingredient)
     
@@ -116,9 +124,9 @@ class Recipe:
         output += f"\nRecipe: {self.name}"
         output += "\n" + "="*60
         output += f"\nCooking Time: {self.cooking_time} minutes"
-        output += f"\nDifficulty: {self.get_difficulty()}"
+        output += f"\nDifficulty: {self.difficulty}"
         output += "\nIngredients:"
-        for ingredient in self.ingredients:
+        for ingredient in self._ingredients:
             output += f"\n  - {ingredient}"
         output += "\n" + "="*60
         return output
@@ -159,28 +167,28 @@ print("="*60)
 print("\n>>> Creating Recipe 1: Tea")
 tea = Recipe("Tea")
 tea.add_ingredients("Tea Leaves", "Sugar", "Water")
-tea.set_cooking_time(5)
+tea.cooking_time = 5
 print(tea)
 
 # Recipe 2: Coffee
 print("\n>>> Creating Recipe 2: Coffee")
 coffee = Recipe("Coffee")
 coffee.add_ingredients("Coffee Powder", "Sugar", "Water")
-coffee.set_cooking_time(5)
+coffee.cooking_time = 5
 print(coffee)
 
 # Recipe 3: Cake
 print("\n>>> Creating Recipe 3: Cake")
 cake = Recipe("Cake")
 cake.add_ingredients("Sugar", "Butter", "Eggs", "Vanilla Essence", "Flour", "Baking Powder", "Milk")
-cake.set_cooking_time(50)
+cake.cooking_time = 50
 print(cake)
 
 # Recipe 4: Banana Smoothie
 print("\n>>> Creating Recipe 4: Banana Smoothie")
 banana_smoothie = Recipe("Banana Smoothie")
 banana_smoothie.add_ingredients("Bananas", "Milk", "Peanut Butter", "Sugar", "Ice Cubes")
-banana_smoothie.set_cooking_time(5)
+banana_smoothie.cooking_time = 5
 print(banana_smoothie)
 
 # Wrap recipes into a list
