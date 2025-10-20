@@ -64,7 +64,9 @@ def take_recipe():
 
 
 # Main code
-filename = input("Enter the filename where you'd like to store your recipes: ")
+filename = input("Enter the filename where you'd like to store your recipes (without extension): ")
+# Add .bin extension automatically
+filename = filename.strip() + '.bin'
 
 # Try to open and load existing recipe data
 try:
@@ -78,7 +80,7 @@ except FileNotFoundError:
         'all_ingredients': []
     }
     
-except:
+except Exception:
     print("An unexpected error occurred - creating a new data structure.")
     data = {
         'recipes_list': [],

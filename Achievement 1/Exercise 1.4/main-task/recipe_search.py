@@ -52,7 +52,7 @@ def search_ingredient(data):
         print("Error: The number you entered is not in the list.")
         return
         
-    except:
+    except Exception:
         print("Error: An unexpected error occurred.")
         return
     
@@ -73,7 +73,9 @@ def search_ingredient(data):
 
 
 # Main code
-filename = input("Enter the filename where your recipes are stored: ")
+filename = input("Enter the filename where your recipes are stored (without extension): ")
+# Add .bin extension automatically
+filename = filename.strip() + '.bin'
 
 # Try to open and load the recipe data
 try:
@@ -84,7 +86,7 @@ except FileNotFoundError:
     print(f"Error: File '{filename}' not found.")
     print("Please make sure you've created recipes using recipe_input.py first.")
     
-except:
+except Exception:
     print("Error: An unexpected error occurred while loading the file.")
     
 else:
