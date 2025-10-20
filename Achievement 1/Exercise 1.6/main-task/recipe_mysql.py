@@ -17,8 +17,8 @@ def connect_database():
     cursor = conn.cursor()
     
     # Create database if not exists
-    cursor.execute("CREATE DATABASE IF NOT EXISTS task_database")
-    cursor.execute("USE task_database")
+    cursor.execute("CREATE DATABASE IF NOT EXISTS task_database;")
+    cursor.execute("USE task_database;")
     
     # Create Recipes table if not exists
     cursor.execute("""CREATE TABLE IF NOT EXISTS Recipes (
@@ -27,7 +27,7 @@ def connect_database():
         ingredients VARCHAR(255),
         cooking_time INT,
         difficulty VARCHAR(20)
-    )""")
+    );""")
     
     conn.commit()
     return conn, cursor
@@ -91,7 +91,7 @@ def create_recipe(conn, cursor):
     ingredients_str = ", ".join(ingredients)
     
     # Insert into database
-    sql = "INSERT INTO Recipes (name, ingredients, cooking_time, difficulty) VALUES (%s, %s, %s, %s)"
+    sql = "INSERT INTO Recipes (name, ingredients, cooking_time, difficulty) VALUES (%s, %s, %s, %s);"
     val = (name, ingredients_str, cooking_time, difficulty)
     
     cursor.execute(sql, val)
@@ -114,7 +114,7 @@ def search_recipe(conn, cursor):
     print("="*60)
     
     # Fetch all ingredients from database
-    cursor.execute("SELECT ingredients FROM Recipes")
+    cursor.execute("SELECT ingredients FROM Recipes;")
     results = cursor.fetchall()
     
     if not results:
@@ -149,7 +149,7 @@ def search_recipe(conn, cursor):
     # Search for recipes containing the ingredient
     # Use LIKE with wildcards to find ingredient in the string
     search_pattern = f"%{search_ingredient}%"
-    cursor.execute("SELECT * FROM Recipes WHERE ingredients LIKE %s", (search_pattern,))
+    cursor.execute("SELECT * FROM Recipes WHERE ingredients LIKE %s;", (search_pattern,))
     results = cursor.fetchall()
     
     if not results:
@@ -179,7 +179,7 @@ def update_recipe(conn, cursor):
     print("="*60)
     
     # Fetch and display all recipes
-    cursor.execute("SELECT * FROM Recipes")
+    cursor.execute("SELECT * FROM Recipes;")
     results = cursor.fetchall()
     
     if not results:
@@ -199,7 +199,7 @@ def update_recipe(conn, cursor):
         return
     
     # Check if recipe exists
-    cursor.execute("SELECT * FROM Recipes WHERE id = %s", (recipe_id,))
+    cursor.execute("SELECT * FROM Recipes WHERE id = %s;", (recipe_id,))
     recipe = cursor.fetchone()
     
     if not recipe:
@@ -229,7 +229,7 @@ def update_recipe(conn, cursor):
     if choice == 1:
         # Update name
         new_name = input("Enter new name: ")
-        cursor.execute("UPDATE Recipes SET name = %s WHERE id = %s", (new_name, recipe_id))
+        cursor.execute("UPDATE Recipes SET name = %s WHERE id = %s;", (new_name, recipe_id))
         print(f"✓ Recipe name updated to '{new_name}'")
     
     elif choice == 2:
@@ -240,7 +240,7 @@ def update_recipe(conn, cursor):
         ingredients_list = [ing.strip() for ing in recipe[2].split(',')]
         new_difficulty = calculate_difficulty(new_time, ingredients_list)
         
-        cursor.execute("UPDATE Recipes SET cooking_time = %s, difficulty = %s WHERE id = %s", 
+        cursor.execute("UPDATE Recipes SET cooking_time = %s, difficulty = %s WHERE id = %s;", 
                       (new_time, new_difficulty, recipe_id))
         print(f"✓ Cooking time updated to {new_time} minutes")
         print(f"✓ Difficulty recalculated to '{new_difficulty}'")
@@ -258,7 +258,7 @@ def update_recipe(conn, cursor):
         # Recalculate difficulty
         new_difficulty = calculate_difficulty(recipe[3], ingredients)
         
-        cursor.execute("UPDATE Recipes SET ingredients = %s, difficulty = %s WHERE id = %s", 
+        cursor.execute("UPDATE Recipes SET ingredients = %s, difficulty = %s WHERE id = %s;", 
                       (ingredients_str, new_difficulty, recipe_id))
         print(f"✓ Ingredients updated")
         print(f"✓ Difficulty recalculated to '{new_difficulty}'")
@@ -282,7 +282,7 @@ def delete_recipe(conn, cursor):
     print("="*60)
     
     # Fetch and display all recipes
-    cursor.execute("SELECT * FROM Recipes")
+    cursor.execute("SELECT * FROM Recipes;")
     results = cursor.fetchall()
     
     if not results:
@@ -302,7 +302,7 @@ def delete_recipe(conn, cursor):
         return
     
     # Confirm deletion
-    cursor.execute("SELECT name FROM Recipes WHERE id = %s", (recipe_id,))
+    cursor.execute("SELECT name FROM Recipes WHERE id = %s;", (recipe_id,))
     recipe = cursor.fetchone()
     
     if not recipe:
@@ -312,7 +312,7 @@ def delete_recipe(conn, cursor):
     confirm = input(f"\nAre you sure you want to delete '{recipe[0]}'? (yes/no): ")
     
     if confirm.lower() == 'yes':
-        cursor.execute("DELETE FROM Recipes WHERE id = %s", (recipe_id,))
+        cursor.execute("DELETE FROM Recipes WHERE id = %s;", (recipe_id,))
         conn.commit()
         print(f"\n✓ Recipe '{recipe[0]}' deleted successfully!")
     else:
