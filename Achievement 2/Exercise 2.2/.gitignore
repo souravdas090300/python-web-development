@@ -1,0 +1,42 @@
+# Python virtual environments (exclude all venv folders)
+**/a2-ve-recipeapp/
+**/achievement2-practice/
+**/web-dev/
+.venv/
+venv/
+env/
+bin/
+include/
+lib/
+pyvenv.cfg
+Scripts/
+share/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Django
+db.sqlite3
+db.sqlite3-journal
+*.log
+local_settings.py
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
