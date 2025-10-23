@@ -35,20 +35,20 @@ class Recipe(Base):
     name = Column(String(50))
     ingredients = Column(String(255))
     cooking_time = Column(Integer)
-    difficulty = Column(String(20))
     
     def __repr__(self):
         return f"<Recipe ID: {self.id} - {self.name}>"
     
     def __str__(self):
         """Return formatted string representation of recipe."""
+        difficulty = self.calculate_difficulty()
         return f"""
 {'='*50}
 Recipe ID: {self.id}
 Name: {self.name}
 Ingredients: {self.ingredients}
 Cooking Time: {self.cooking_time} minutes
-Difficulty: {self.difficulty}
+Difficulty: {difficulty}
 {'='*50}
 """
     
@@ -85,35 +85,87 @@ Base.metadata.create_all(engine)
 # HELPER FUNCTIONS
 # ============================================
 
-def create_recipe():
-    """Create a new recipe and add it to the database."""
-    print("\n" + "="*50)
-    print("CREATE NEW RECIPE")
-    print("="*50)
+def check_recipes_exist():
+    """Check if any recipes exist in the database."""
+    return session.query(Recipe).count() > 0
+
+
+def validate_recipe_name(name):
+    """
+    Validate recipe name using Python built-in methods.
+    Returns tuple (is_valid, error_message)
+    """
+    if not name or len(name) == 0:
+        return False, "Recipe name cannot be empty!"
     
-    # Get recipe name with validation
+    if len(name) > 50:
+        return False, "Recipe name too long! Maximum 50 characters."
+    
+    # Check if name contains only alphanumeric characters and spaces
+    # Remove spaces for validation
+    name_without_spaces = name.replace(' ', '')
+    if not name_without_spaces.isalnum():
+        return False, "Recipe name should contain only letters and numbers!"
+    
+    return True, ""
+
+
+def validate_cooking_time(time_str):
+    """
+    Validate cooking time using Python built-in methods.
+    Returns tuple (is_valid, cooking_time, error_message)
+    """
+    # Check if input is numeric
+    if not time_str.isnumeric():
+        return False, None, "Please enter a valid number!"
+    
+    cooking_time = int(time_str)
+    if cooking_time < 1:
+        return False, None, "Cooking time must be positive!"
+    
+    return True, cooking_time, ""
+
+
+def validate_ingredient(ingredient):
+    """
+    Validate ingredient using Python built-in methods.
+    Returns tuple (is_valid, error_message)
+    """
+    if not ingredient:
+        return False, "Ingredient cannot be empty!"
+    
+    # Remove spaces for validation
+    ingredient_without_spaces = ingredient.replace(' ', '')
+    
+    # Check if ingredient contains only alphabetic characters
+    if not ingredient_without_spaces.isalpha():
+        return False, "Ingredient should contain only letters!"
+    
+    return True, ""
+
+
+def get_validated_name():
+    """Get and validate recipe name from user."""
     while True:
         name = input("\nEnter recipe name (max 50 characters): ").strip()
-        if len(name) == 0:
-            print("Error: Recipe name cannot be empty!")
-            continue
-        if len(name) > 50:
-            print("Error: Recipe name too long! Maximum 50 characters.")
-            continue
-        break
-    
-    # Get cooking time with validation
+        is_valid, error = validate_recipe_name(name)
+        if is_valid:
+            return name
+        print(f"Error: {error}")
+
+
+def get_validated_cooking_time():
+    """Get and validate cooking time from user."""
     while True:
-        try:
-            cooking_time = int(input("Enter cooking time in minutes: "))
-            if cooking_time < 1:
-                print("Error: Cooking time must be positive!")
-                continue
-            break
-        except ValueError:
-            print("Error: Please enter a valid number!")
-    
-    # Get ingredients
+        time_str = input("Enter cooking time in minutes: ").strip()
+        is_valid, cooking_time, error = validate_cooking_time(time_str)
+        if is_valid:
+            return cooking_time
+        print(f"Error: {error}")
+
+
+def get_validated_ingredients():
+    """Get and validate ingredients list from user."""
     print("\nEnter ingredients (one per line).")
     print("Type 'done' when finished:")
     ingredients_list = []
@@ -125,8 +177,28 @@ def create_recipe():
                 print("Error: Please enter at least one ingredient!")
                 continue
             break
+        
         if ingredient:
-            ingredients_list.append(ingredient)
+            is_valid, error = validate_ingredient(ingredient)
+            if is_valid:
+                ingredients_list.append(ingredient)
+            else:
+                print(f"Error: {error}")
+                print("Please enter the ingredient again.")
+    
+    return ingredients_list
+
+
+def create_recipe():
+    """Create a new recipe and add it to the database."""
+    print("\n" + "="*50)
+    print("CREATE NEW RECIPE")
+    print("="*50)
+    
+    # Get validated inputs using helper functions
+    name = get_validated_name()
+    cooking_time = get_validated_cooking_time()
+    ingredients_list = get_validated_ingredients()
     
     # Join ingredients into comma-separated string
     ingredients_str = ', '.join(ingredients_list)
@@ -137,22 +209,19 @@ def create_recipe():
         print("Recipe not created.")
         return
     
-    # Create recipe object
+    # Create recipe object (without difficulty - it's calculated)
     recipe = Recipe(
         name=name,
         ingredients=ingredients_str,
         cooking_time=cooking_time
     )
     
-    # Calculate and set difficulty
-    recipe.difficulty = recipe.calculate_difficulty()
-    
     # Add to database
     session.add(recipe)
     session.commit()
     
     print(f"\n✓ Recipe '{name}' created successfully!")
-    print(f"  Difficulty: {recipe.difficulty}")
+    print(f"  Difficulty: {recipe.calculate_difficulty()}")
 
 
 def view_all_recipes():
@@ -161,12 +230,13 @@ def view_all_recipes():
     print("ALL RECIPES")
     print("="*50)
     
-    # Retrieve all recipes
-    recipes = session.query(Recipe).all()
-    
-    if not recipes:
+    # Check if recipes exist using helper function
+    if not check_recipes_exist():
         print("\nNo recipes found in the database.")
         return
+    
+    # Retrieve all recipes
+    recipes = session.query(Recipe).all()
     
     print(f"\nTotal recipes: {len(recipes)}\n")
     
@@ -175,13 +245,13 @@ def view_all_recipes():
 
 
 def search_by_ingredient():
-    """Search for recipes containing a specific ingredient."""
+    """Search for recipes containing specific ingredients."""
     print("\n" + "="*50)
     print("SEARCH BY INGREDIENT")
     print("="*50)
     
-    # Check if any recipes exist
-    if session.query(Recipe).count() == 0:
+    # Check if any recipes exist using helper function
+    if not check_recipes_exist():
         print("\nNo recipes available to search.")
         return
     
@@ -201,28 +271,42 @@ def search_by_ingredient():
     for i, ingredient in enumerate(all_ingredients, 1):
         print(f"{i}. {ingredient}")
     
-    # Get user choice
+    # Get user choices (multiple selections allowed)
+    print(f"\nSelect ingredient numbers (1-{len(all_ingredients)}) separated by spaces.")
+    print("Example: 1 3 5")
+    
     while True:
         try:
-            choice = int(input(f"\nSelect ingredient number (1-{len(all_ingredients)}): "))
-            if 1 <= choice <= len(all_ingredients):
-                search_ingredient = all_ingredients[choice - 1]
+            user_input = input("\nYour selection: ").strip()
+            
+            # Split input by spaces and convert to integers
+            choices = [int(choice) for choice in user_input.split()]
+            
+            # Validate all choices are in range
+            if all(1 <= choice <= len(all_ingredients) for choice in choices):
+                selected_ingredients = [all_ingredients[choice - 1] for choice in choices]
                 break
             else:
-                print(f"Error: Please enter a number between 1 and {len(all_ingredients)}!")
+                print(f"Error: All numbers must be between 1 and {len(all_ingredients)}!")
         except ValueError:
-            print("Error: Please enter a valid number!")
+            print("Error: Please enter valid numbers separated by spaces!")
     
-    # Search for recipes containing this ingredient
-    search_pattern = f"%{search_ingredient}%"
-    matching_recipes = session.query(Recipe).filter(Recipe.ingredients.like(search_pattern)).all()
+    # Search for recipes containing ALL selected ingredients
+    print(f"\nSearching for recipes containing: {', '.join(selected_ingredients)}")
+    
+    matching_recipes = []
+    for recipe in all_recipes:
+        recipe_ingredients = recipe.return_ingredients_as_list()
+        # Check if all selected ingredients are in this recipe
+        if all(ingredient in recipe_ingredients for ingredient in selected_ingredients):
+            matching_recipes.append(recipe)
     
     if not matching_recipes:
-        print(f"\nNo recipes found containing '{search_ingredient}'.")
+        print(f"\nNo recipes found containing all selected ingredients.")
         return
     
     print(f"\n{'='*50}")
-    print(f"Recipes containing '{search_ingredient}': {len(matching_recipes)}")
+    print(f"Recipes found: {len(matching_recipes)}")
     print('='*50)
     
     for recipe in matching_recipes:
@@ -235,8 +319,8 @@ def edit_recipe():
     print("EDIT RECIPE")
     print("="*50)
     
-    # Check if any recipes exist
-    if session.query(Recipe).count() == 0:
+    # Check if any recipes exist using helper function
+    if not check_recipes_exist():
         print("\nNo recipes available to edit.")
         return
     
@@ -250,7 +334,8 @@ def edit_recipe():
     while True:
         try:
             recipe_id = int(input("\nEnter recipe ID to edit: "))
-            recipe = session.query(Recipe).get(recipe_id)
+            # Use new non-deprecated method
+            recipe = session.get(Recipe, recipe_id)
             if recipe:
                 break
             else:
@@ -279,49 +364,16 @@ def edit_recipe():
     
     # Update based on choice
     if choice == 1:
-        # Edit name
-        while True:
-            new_name = input("Enter new recipe name (max 50 characters): ").strip()
-            if len(new_name) == 0:
-                print("Error: Recipe name cannot be empty!")
-                continue
-            if len(new_name) > 50:
-                print("Error: Recipe name too long! Maximum 50 characters.")
-                continue
-            recipe.name = new_name
-            break
+        # Edit name using validation helper
+        recipe.name = get_validated_name()
     
     elif choice == 2:
-        # Edit cooking time
-        while True:
-            try:
-                new_time = int(input("Enter new cooking time in minutes: "))
-                if new_time < 1:
-                    print("Error: Cooking time must be positive!")
-                    continue
-                recipe.cooking_time = new_time
-                # Recalculate difficulty
-                recipe.difficulty = recipe.calculate_difficulty()
-                break
-            except ValueError:
-                print("Error: Please enter a valid number!")
+        # Edit cooking time using validation helper
+        recipe.cooking_time = get_validated_cooking_time()
     
     elif choice == 3:
-        # Edit ingredients
-        print("\nEnter new ingredients (one per line).")
-        print("Type 'done' when finished:")
-        ingredients_list = []
-        
-        while True:
-            ingredient = input("> ").strip()
-            if ingredient.lower() == 'done':
-                if len(ingredients_list) == 0:
-                    print("Error: Please enter at least one ingredient!")
-                    continue
-                break
-            if ingredient:
-                ingredients_list.append(ingredient)
-        
+        # Edit ingredients using validation helper
+        ingredients_list = get_validated_ingredients()
         ingredients_str = ', '.join(ingredients_list)
         
         if len(ingredients_str) > 255:
@@ -330,13 +382,11 @@ def edit_recipe():
             return
         
         recipe.ingredients = ingredients_str
-        # Recalculate difficulty
-        recipe.difficulty = recipe.calculate_difficulty()
     
     # Commit changes
     session.commit()
     print(f"\n✓ Recipe updated successfully!")
-    print(f"  New difficulty: {recipe.difficulty}")
+    print(f"  New difficulty: {recipe.calculate_difficulty()}")
 
 
 def delete_recipe():
@@ -345,8 +395,8 @@ def delete_recipe():
     print("DELETE RECIPE")
     print("="*50)
     
-    # Check if any recipes exist
-    if session.query(Recipe).count() == 0:
+    # Check if any recipes exist using helper function
+    if not check_recipes_exist():
         print("\nNo recipes available to delete.")
         return
     
@@ -360,7 +410,8 @@ def delete_recipe():
     while True:
         try:
             recipe_id = int(input("\nEnter recipe ID to delete: "))
-            recipe = session.query(Recipe).get(recipe_id)
+            # Use new non-deprecated method
+            recipe = session.get(Recipe, recipe_id)
             if recipe:
                 break
             else:
