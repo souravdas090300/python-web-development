@@ -74,11 +74,11 @@ See `ENVIRONMENT_SETUP.md` for detailed setup and usage instructions.
 # Navigate to src
 cd src
 
-# Run migrations
-python manage.py migrate
+# Run migrations with local settings
+python manage.py migrate --settings=recipestore.settings_local
 
 # Create superuser
-python manage.py createsuperuser
+python manage.py createsuperuser --settings=recipestore.settings_local
 ```
 
 ### Run Development Server
@@ -87,7 +87,7 @@ python manage.py createsuperuser
 .\a2-e23-local\Scripts\Activate.ps1
 
 cd src
-python manage.py runserver
+python manage.py runserver --settings=recipestore.settings_local
 ```
 
 Access admin at: http://127.0.0.1:8000/admin/
@@ -95,8 +95,13 @@ Access admin at: http://127.0.0.1:8000/admin/
 ### Run Tests
 ```powershell
 cd src
-python manage.py test
+python manage.py test --settings=recipestore.settings_local
 ```
+
+### Important: Always Specify Settings
+Since this project uses separate settings files (no default settings.py), you must always include:
+- `--settings=recipestore.settings_local` for local development
+- `--settings=recipestore.settings_prod` for production testing
 
 ## Mentor Revisions Implemented
 
