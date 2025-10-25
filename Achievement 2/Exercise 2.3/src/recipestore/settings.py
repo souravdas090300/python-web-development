@@ -14,10 +14,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # recipe-related apps
+    # Recipe app (single app design per mentor recommendation)
     'recipes',
-    'recipe_categories',
-    'recipe_ingredients',
 ]
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

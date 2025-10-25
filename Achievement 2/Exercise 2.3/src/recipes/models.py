@@ -2,18 +2,41 @@ from django.db import models
 
 
 class Recipe(models.Model):
-	DIFFICULTY_CHOICES = [
-		('easy', 'Easy'),
-		('medium', 'Medium'),
-		('hard', 'Hard'),
-	]
+	"""Simple Recipe model using a comma-separated ingredients string.
+
+	Mentor guidance: keep a single app (recipes) and store ingredients as a
+	comma-separated string (e.g., "salt, water, sugar").
+	"""
 
 	name = models.CharField(max_length=120)
 	cooking_time = models.PositiveIntegerField(help_text='in minutes')
-	ingredients = models.TextField()
-	description = models.TextField()
-	difficulty_level = models.CharField(max_length=10, choices=DIFFICULTY_CHOICES, default='easy')
-	category = models.ForeignKey('recipe_categories.Category', on_delete=models.SET_NULL, null=True, blank=True)
+	# Store ingredients as a comma-separated string
+	ingredients = models.TextField(help_text='Comma-separated list of ingredients')
+	description = models.TextField(blank=True)
 
 	def __str__(self) -> str:
 		return self.name
+
+	# Helper methods (not stored in DB)
+	def ingredients_list(self) -> list[str]:
+		"""Return ingredients as a normalized list of strings."""
+		if not self.ingredients:
+			return []
+		return [item.strip() for item in self.ingredients.split(',') if item.strip()]
+
+	def difficulty(self) -> str:
+		"""Compute difficulty based on cooking time and number of ingredients.
+
+		Easy: cooking_time < 10 and ingredients < 4
+		Medium: cooking_time < 10 and ingredients >= 4
+		Intermediate: cooking_time >= 10 and ingredients < 4
+		Hard: otherwise
+		"""
+		num_ingredients = len(self.ingredients_list())
+		if self.cooking_time < 10 and num_ingredients < 4:
+			return 'Easy'
+		if self.cooking_time < 10 and num_ingredients >= 4:
+			return 'Medium'
+		if self.cooking_time >= 10 and num_ingredients < 4:
+			return 'Intermediate'
+		return 'Hard'

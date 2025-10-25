@@ -1,0 +1,33 @@
+# Virtual Environments (NOT tracked in git per mentor requirement)
+a2-e23-local/
+a2-e23-prod/
+cf-python-base/
+web-dev/
+venv/
+env/
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Django
+*.log
+db.sqlite3
+db.sqlite3-journal
+/static/
+/media/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
