@@ -1,7 +1,6 @@
 from django.shortcuts import render
 
-# Create your views here.
 
 def home(request):
-    """View function for home page of site."""
-    return render(request, 'recipes/recipes_home.html')
+	"""Simple welcome page for the Recipe App."""
+	return render(request, 'recipes/recipes_home.html')

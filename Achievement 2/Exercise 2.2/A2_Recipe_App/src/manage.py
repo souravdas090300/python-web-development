@@ -6,7 +6,8 @@ import sys
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'recipe_project.settings')
+    # Default to local settings; override via DJANGO_SETTINGS_MODULE when needed
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'recipe_project.settings_local')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

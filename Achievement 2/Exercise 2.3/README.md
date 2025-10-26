@@ -1,25 +1,32 @@
 # Exercise 2.3 - Django Models and Admin
 
 ## Overview
-This exercise implements a simple Recipe model in Django with Django admin integration, following mentor recommendations for a clean, single-app architecture.
+This exercise implements a simple Recipe model in Django with Django admin integration, following mentor recommendations for a clean, single-app architecture with CSV-based ingredients storage.
 
 ## Project Structure
 ```
 Exercise 2.3/
 ├── src/
 │   ├── recipes/           # Single app for all recipe functionality
-│   │   ├── models.py      # Recipe model (simple design)
-│   │   ├── admin.py       # Admin configuration
-│   │   └── tests.py       # Test cases
+│   │   ├── models.py      # Recipe model (simple CSV design)
+│   │   ├── admin.py       # Admin configuration with computed difficulty
+│   │   ├── views.py       # Home view
+│   │   ├── urls.py        # App URLs
+│   │   ├── tests.py       # Model tests (10 tests)
+│   │   ├── tests_views.py # View/admin tests (4 tests)
+│   │   └── templates/
+│   │       └── recipes/
+│   │           └── recipes_home.html
 │   ├── recipestore/       # Project settings
-│   │   ├── settings.py    # Base settings
-│   │   ├── settings_local.py   # Local development settings
-│   │   └── settings_prod.py    # Production settings
-│   └── manage.py
+│   │   ├── settings_local.py   # Local development settings (DEBUG=True)
+│   │   └── settings_prod.py    # Production settings (DEBUG=False)
+│   └── manage.py          # Defaults to settings_local
 ├── a2-e23-local/          # Local virtual environment
 ├── a2-e23-prod/           # Production virtual environment
 ├── requirements.txt       # Python dependencies
 ├── screenshots/           # Required screenshots
+├── learning-journal.md    # Development journal
+├── learning-journey.md    # Learning reflections
 └── README.md
 ```
 
@@ -57,6 +64,20 @@ Single, simple model with computed difficulty:
 - ALLOWED_HOSTS configured
 
 See `ENVIRONMENT_SETUP.md` for detailed setup and usage instructions.
+
+#### How to run (production)
+- ASGI (Uvicorn):
+  ```powershell
+  # from Exercise 2.3/src
+  $env:DJANGO_SETTINGS_MODULE='recipestore.settings_prod'
+  uvicorn recipestore.asgi:application --host 0.0.0.0 --port 8000 --workers 2
+  ```
+- WSGI (Waitress):
+  ```powershell
+  # from Exercise 2.3/src
+  $env:DJANGO_SETTINGS_MODULE='recipestore.settings_prod'
+  waitress-serve --host=0.0.0.0 --port=8000 recipestore.wsgi:application
+  ```
 
 ## Required Screenshots (Per Mentor Instructions)
 
@@ -105,19 +126,29 @@ Since this project uses separate settings files (no default settings.py), you mu
 
 ## Mentor Revisions Implemented
 
-✅ **Simplified to single app:** Removed `recipe_categories` and `recipe_ingredients` apps, consolidated everything into `recipes` app
+✅ **Simplified to single app:** Consolidated to `recipes` app only (no recipe_categories or recipe_ingredients)
 
-✅ **Simple model design:** Recipe model uses comma-separated string for ingredients instead of complex relationships
+✅ **Simple CSV-based model:** Recipe.ingredients stores comma-separated string (e.g., "salt, water, sugar")
 
-✅ **Computed difficulty:** Difficulty is calculated on-the-fly, not stored in database
+✅ **Computed difficulty:** Difficulty is calculated via method, not stored in database
+  - Easy: cooking_time < 10 AND ingredients < 4
+  - Medium: cooking_time < 10 AND ingredients ≥ 4
+  - Intermediate: cooking_time ≥ 10 AND ingredients < 4
+  - Hard: otherwise
 
-✅ **Two environments:** Created separate local and production virtual environments with appropriate settings
+✅ **Two environments:** Separate settings_local.py (DEBUG=True) and settings_prod.py (DEBUG=False)
 
-✅ **Schema diagram:** Prepared instructions for creating UML diagram using online tools
+✅ **Environment-specific venvs:** a2-e23-local and a2-e23-prod with Django 5.2.7, Uvicorn, Waitress
+
+✅ **Production server options:** ASGI (Uvicorn) or WSGI (Waitress) via DJANGO_SETTINGS_MODULE
+
+✅ **Schema diagram preparation:** Instructions provided for creating UML diagram using dbdiagram.io or draw.io
 
 ✅ **Test naming:** Test screenshot should be named `Test-Report.jpg`
 
-✅ **Five recipes:** Admin configured to add and display recipes
+✅ **Admin with 5+ recipes:** Admin displays computed difficulty column; tests verify functionality (14 tests passing)
+
+✅ **Welcome page:** Created home view at root URL rendering recipes_home.html
 
 ## Technologies Used
 - Python 3.14
