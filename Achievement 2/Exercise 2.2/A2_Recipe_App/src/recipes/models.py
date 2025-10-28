@@ -13,6 +13,7 @@ class Recipe(models.Model):
 	# Store ingredients as a comma-separated string (TextField)
 	ingredients = models.TextField(help_text='Comma-separated list of ingredients')
 	description = models.TextField(blank=True)
+	pic = models.ImageField(upload_to='recipes', default='no_picture.jpg')
 
 	def __str__(self) -> str:
 		return self.name
