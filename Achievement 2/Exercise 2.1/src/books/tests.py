@@ -5,9 +5,9 @@ class BookModelTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         # Set up non-modified objects used by all test methods
-        # Use only the fields that actually exist in your Book model
         Book.objects.create(
-            name='Pride and Prejudice', 
+            name='Pride and Prejudice',
+            author_name='Jane Austen',
             price=23.71,
             genre='classic', 
             book_type='hardcover'
@@ -46,3 +46,9 @@ class BookModelTest(TestCase):
         
         # Test that the book type is set correctly
         self.assertEqual(book.book_type, 'hardcover')
+    
+    def test_get_absolute_url(self):
+        book = Book.objects.get(id=1)
+        # get_absolute_url() should take you to the detail page of book #1
+        # and load the URL /books/list/1
+        self.assertEqual(book.get_absolute_url(), '/books/list/1')

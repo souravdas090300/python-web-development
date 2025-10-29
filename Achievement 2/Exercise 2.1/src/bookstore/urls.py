@@ -12,6 +12,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('sales.urls')),  # Include sales app URLs at root
+    path('books/', include('books.urls')),  # Include books app URLs
 ]
 
 if settings.DEBUG:
