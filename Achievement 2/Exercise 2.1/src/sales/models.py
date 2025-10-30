@@ -1,11 +1,13 @@
 from django.db import models
+from books.models import Book
 
 
 # Create your models here.
 class Sale (models.Model):
-    name = models.CharField(max_length=120)
-    notes = models.TextField()
-    pic = models.ImageField(upload_to='sales', default='no_picture.jpg')
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    quantity = models.IntegerField()
+    price = models.FloatField()
+    date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return str(self.name)
+        return f"id: {self.id}, book: {self.book.name}, quantity: {self.quantity}, price: {self.price}"
